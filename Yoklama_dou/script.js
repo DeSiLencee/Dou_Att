@@ -6,8 +6,7 @@ const courseSelectionScreen = document.getElementById('course-selection-screen')
 const attendanceScreen = document.getElementById('attendance-screen');
 const summaryScreen = document.getElementById('summary-screen');
 
-const studentLoginBtn = document.getElementById('student-login-btn');
-const teacherLoginBtn = document.getElementById('teacher-login-btn');
+const academicLoginForm = document.getElementById('academic-login-form');
 
 const courseListDiv = document.getElementById('course-list');
 const selectedCourseNameDisplay = document.getElementById('selected-course-name');
@@ -44,7 +43,9 @@ let selectedCourse = null;
 // --- Screen Navigation ---
 function showScreen(screenToShow) {
     const screens = document.querySelectorAll('.screen');
-    screens.forEach(screen => screen.classList.remove('active'));
+    screens.forEach(screen => {
+        screen.classList.remove('active');
+    });
     screenToShow.classList.add('active');
 }
 
