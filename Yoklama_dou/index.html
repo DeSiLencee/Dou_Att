@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doğuş Üniversitesi Yoklama Sistemi</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script> <!-- QR Code Library -->
+</head>
+<body>
+    <div class="container">
+        <!-- Giriş Ekranı -->
+        <section id="login-screen" class="screen active">
+            <img src="dogus.png" alt="Doğuş Üniversitesi Logo" class="school-logo">
+            <h1>Doğuş Üniversitesi Yoklama Sistemi</h1>
+            <div class="login-buttons">
+                <button id="student-login-btn" class="btn secondary">Öğrenci Girişi</button>
+                <button id="teacher-login-btn" class="btn primary">Akademik Giriş</button>
+            </div>
+        </section>
+
+        <!-- Ders Seçim Ekranı (Akademik Panel) -->
+        <section id="course-selection-screen" class="screen">
+            <div class="course-selection-header">
+                <h2>Akademik Panel: Ders Seçimi</h2>
+                <p>Yoklama almak veya detaylarını görüntülemek için soldan bir ders seçin.</p>
+            </div>
+            <div class="course-selection-content">
+                <div class="course-list-panel">
+                    <h3>Derslerim</h3>
+                    <div id="course-list" class="course-list-vertical">
+                        <!-- Dersler buraya yüklenecek -->
+                    </div>
+                </div>
+                <div class="course-details-panel">
+                    <h3>Seçilen Ders Bilgileri</h3>
+                    <div id="selected-course-info">
+                        <p><strong>Ders Adı:</strong> <span id="selected-course-name">Yok</span></p>
+                        <p><strong>Zaman:</strong> <span id="selected-course-time">Yok</span></p>
+                        <p><strong>Tarih:</strong> <span id="selected-course-date">Yok</span></p>
+                    </div>
+                    <button id="start-attendance-for-selected-course-btn" class="btn primary hidden">Yoklama Başlat</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Yoklama Ekranı -->
+        <section id="attendance-screen" class="screen">
+            <h2 id="attendance-course-name"></h2>
+            <p><span id="attendance-course-time"></span> - <span id="attendance-course-date"></span></p>
+
+            <div class="qr-code-section">
+                <h3>Yoklama QR Kodu</h3>
+                <div id="qrcode"></div>
+                <p>Öğrenciler QR kodu okutarak yoklamaya katılabilir.</p>
+            </div>
+
+            <div id="student-list" class="student-grid">
+                <!-- Öğrenciler buraya yüklenecek -->
+            </div>
+
+            <div class="manual-add">
+                <input type="text" id="manual-student-name-input" placeholder="Öğrenci İsim Soyisim">
+                <input type="text" id="manual-student-id-input" placeholder="Öğrenci Numarası">
+                <button id="add-manual-student-btn" class="btn secondary">Ekle</button>
+            </div>
+
+            <button id="finish-attendance-btn" class="btn primary">Yoklamayı Bitir</button>
+        </section>
+
+        <!-- Özet Ekranı -->
+        <section id="summary-screen" class="screen">
+            <h2 id="summary-course-name"></h2>
+            <p><span id="summary-course-time"></span> - <span id="summary-course-date"></span></p>
+            <h3>Yoklama Özeti</h3>
+            <div id="summary-list" class="summary-grid">
+                <!-- Özet buraya yüklenecek -->
+            </div>
+            <button id="restart-btn" class="btn secondary">Yeni Yoklama Başlat</button>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
