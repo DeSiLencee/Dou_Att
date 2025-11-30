@@ -54,7 +54,6 @@ async function fetchCourses() {
         const response = await fetch(`${API_BASE_URL}/courses`);
         if (!response.ok) throw new Error('Failed to fetch courses');
         allCourses = await response.json();
-        renderCourseList(allCourses); // Render in the main course selection panel
         renderAcademicMenu(allCourses); // Render in the left menu
     } catch (error) {
         console.error('Error fetching courses:', error);
@@ -133,25 +132,9 @@ async function fetchSummary(courseId) {
 }
 
 // --- Rendering Functions ---
-function renderCourseList(courses) {
-    courseListDiv.innerHTML = '';
-    courses.forEach(course => {
-        const courseCard = document.createElement('div');
-        courseCard.className = 'course-card';
-        courseCard.dataset.id = course.id;
-        courseCard.innerHTML = `
-            <h3>${course.name}</h3>
-            <p>${course.time}</p>
-            <p>${course.date}</p>
-        `;
-        courseListDiv.appendChild(courseCard);
-
-        courseCard.addEventListener('click', () => selectCourse(course.id));
-    });
-}
-
 function renderAcademicMenu(courses) {
-    academicMenuList.innerHTML = ''; // Clear previous menu items
+    const submenu = academicMenuList.querySelector('.submenu');
+    submenu.innerHTML = ''; // Clear previous menu items
 
     // Add courses to the left menu
     courses.forEach(course => {
@@ -167,8 +150,16 @@ function renderAcademicMenu(courses) {
             highlightSelectedCourseInMenu(course.id);
         });
         listItem.appendChild(link);
-        academicMenuList.appendChild(listItem);
+        submenu.appendChild(listItem);
     });
+
+    const derslerMenuItem = academicMenuList.querySelector('.has-submenu > a');
+    derslerMenuItem.addEventListener('click', (event) => {
+        event.preventDefault();
+        const parent = derslerMenuItem.parentElement;
+        parent.classList.toggle('open');
+    });
+
 
     // Add Logout option
     const logoutListItem = document.createElement('li');
@@ -188,18 +179,6 @@ function renderAcademicMenu(courses) {
 }
 
 function selectCourse(courseId) {
-    // Remove 'selected' class from previously selected course in the main panel
-    const prevSelectedMain = document.querySelector('.course-card.selected');
-    if (prevSelectedMain) {
-        prevSelectedMain.classList.remove('selected');
-    }
-
-    // Add 'selected' class to the clicked course in the main panel
-    const newSelectedMain = document.querySelector(`.course-card[data-id="${courseId}"]`);
-    if (newSelectedMain) {
-        newSelectedMain.classList.add('selected');
-    }
-
     selectedCourse = allCourses.find(course => course.id === courseId);
     selectedCourseId = courseId;
 
@@ -351,12 +330,6 @@ teacherLoginBtn.addEventListener('click', () => {
 
 studentLoginBtn.addEventListener('click', () => {
     alert('Öğrenci girişi özelliği henüz aktif değildir. Lütfen daha sonra tekrar deneyin.');
-});
-
-// New event listener for the left menu "Akademik Giriş" link
-academicLoginMenuLink.addEventListener('click', (event) => {
-    event.preventDefault(); // Prevent default anchor link behavior
-    teacherLoginBtn.click(); // Simulate a click on the existing teacher login button
 });
 
 startAttendanceForSelectedCourseBtn.addEventListener('click', startAttendanceFlow);

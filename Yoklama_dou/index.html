@@ -10,7 +10,13 @@
 <body>
     <nav class="left-menu hidden"> <!-- Added 'hidden' class to hide it initially -->
         <ul id="academic-menu-list">
-            <!-- Menu items will be populated dynamically by JavaScript -->
+            <li class="menu-item has-submenu">
+                <a href="#">Dersler</a>
+                <ul class="submenu">
+                    <!-- Dersler buraya yüklenecek -->
+                </ul>
+            </li>
+            <!-- Other menu items will be populated dynamically by JavaScript -->
         </ul>
     </nav>
     <div class="container">
@@ -31,12 +37,6 @@
                 <p>Yoklama almak veya detaylarını görüntülemek için soldan bir ders seçin.</p>
             </div>
             <div class="course-selection-content">
-                <div class="course-list-panel">
-                    <h3>Derslerim</h3>
-                    <div id="course-list" class="course-list-vertical">
-                        <!-- Dersler buraya yüklenecek -->
-                    </div>
-                </div>
                 <div class="course-details-panel">
                     <h3>Seçilen Ders Bilgileri</h3>
                     <div id="selected-course-info">
