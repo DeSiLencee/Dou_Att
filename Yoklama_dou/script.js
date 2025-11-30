@@ -32,6 +32,9 @@ const summaryCourseDate = document.getElementById('summary-course-date');
 const summaryListDiv = document.getElementById('summary-list');
 const restartBtn = document.getElementById('restart-btn');
 
+const leftMenu = document.querySelector('.left-menu'); // Reference to the left menu container
+const academicMenuList = document.getElementById('academic-menu-list'); // Reference to the ul inside the left menu
+
 let allCourses = []; // Store all fetched courses
 let currentAttendance = {}; // { studentId: { name: 'Student Name', id: 's123', status: 'present'/'absent' }}
 let studentsData = []; // Store the students for the selected course
@@ -51,7 +54,8 @@ async function fetchCourses() {
         const response = await fetch(`${API_BASE_URL}/courses`);
         if (!response.ok) throw new Error('Failed to fetch courses');
         allCourses = await response.json();
-        renderCourseList(allCourses);
+        renderCourseList(allCourses); // Render in the main course selection panel
+        renderAcademicMenu(allCourses); // Render in the left menu
     } catch (error) {
         console.error('Error fetching courses:', error);
         alert('Ders listesi yüklenirken bir hata oluştu.');
@@ -146,17 +150,54 @@ function renderCourseList(courses) {
     });
 }
 
+function renderAcademicMenu(courses) {
+    academicMenuList.innerHTML = ''; // Clear previous menu items
+
+    // Add courses to the left menu
+    courses.forEach(course => {
+        const listItem = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = '#';
+        link.textContent = course.name;
+        link.dataset.courseId = course.id;
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            selectCourse(course.id);
+            showScreen(courseSelectionScreen); // Ensure course selection screen is visible
+            highlightSelectedCourseInMenu(course.id);
+        });
+        listItem.appendChild(link);
+        academicMenuList.appendChild(listItem);
+    });
+
+    // Add Logout option
+    const logoutListItem = document.createElement('li');
+    const logoutLink = document.createElement('a');
+    logoutLink.href = '#';
+    logoutLink.textContent = 'Çıkış Yap';
+    logoutLink.id = 'logout-btn'; // Give it an ID for specific styling/selection if needed
+    logoutLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        logout();
+    });
+    logoutListItem.appendChild(logoutLink);
+    academicMenuList.appendChild(logoutListItem);
+
+    leftMenu.classList.remove('hidden'); // Show the left menu
+    document.body.classList.add('body-menu-active'); // Add class to body when menu is active
+}
+
 function selectCourse(courseId) {
-    // Remove 'selected' class from previously selected course
-    const prevSelected = document.querySelector('.course-card.selected');
-    if (prevSelected) {
-        prevSelected.classList.remove('selected');
+    // Remove 'selected' class from previously selected course in the main panel
+    const prevSelectedMain = document.querySelector('.course-card.selected');
+    if (prevSelectedMain) {
+        prevSelectedMain.classList.remove('selected');
     }
 
-    // Add 'selected' class to the clicked course
-    const newSelected = document.querySelector(`.course-card[data-id="${courseId}"]`);
-    if (newSelected) {
-        newSelected.classList.add('selected');
+    // Add 'selected' class to the clicked course in the main panel
+    const newSelectedMain = document.querySelector(`.course-card[data-id="${courseId}"]`);
+    if (newSelectedMain) {
+        newSelectedMain.classList.add('selected');
     }
 
     selectedCourse = allCourses.find(course => course.id === courseId);
@@ -173,6 +214,21 @@ function selectCourse(courseId) {
         selectedCourseTimeDisplay.textContent = 'Yok';
         selectedCourseDateDisplay.textContent = 'Yok';
         startAttendanceForSelectedCourseBtn.classList.add('hidden');
+    }
+    highlightSelectedCourseInMenu(courseId); // Also highlight in left menu
+}
+
+function highlightSelectedCourseInMenu(courseId) {
+    // Remove 'selected-menu-item' class from previously selected menu item
+    const prevSelected = academicMenuList.querySelector('.selected-menu-item');
+    if (prevSelected) {
+        prevSelected.classList.remove('selected-menu-item');
+    }
+
+    // Add 'selected-menu-item' class to the newly selected menu item
+    const newSelected = academicMenuList.querySelector(`[data-course-id="${courseId}"]`);
+    if (newSelected) {
+        newSelected.classList.add('selected-menu-item');
     }
 }
 
@@ -268,6 +324,25 @@ function generateQRCode(text) {
     });
 }
 
+function logout() {
+    currentAttendance = {}; // Clear attendance
+    studentsData = []; // Clear students data
+    selectedCourseId = null;
+    selectedCourse = null;
+    allCourses = []; // Clear courses
+
+    // Clear selected course info display
+    selectedCourseNameDisplay.textContent = 'Yok';
+    selectedCourseTimeDisplay.textContent = 'Yok';
+    selectedCourseDateDisplay.textContent = 'Yok';
+    startAttendanceForSelectedCourseBtn.classList.add('hidden'); // Hide the start button
+    
+    academicMenuList.innerHTML = ''; // Clear menu
+    leftMenu.classList.add('hidden'); // Hide the left menu
+    document.body.classList.remove('body-menu-active'); // Remove class from body when logging out
+    showScreen(loginScreen); // Go back to login screen
+}
+
 // --- Event Listeners ---
 teacherLoginBtn.addEventListener('click', () => {
     fetchCourses();
@@ -276,6 +351,12 @@ teacherLoginBtn.addEventListener('click', () => {
 
 studentLoginBtn.addEventListener('click', () => {
     alert('Öğrenci girişi özelliği henüz aktif değildir. Lütfen daha sonra tekrar deneyin.');
+});
+
+// New event listener for the left menu "Akademik Giriş" link
+academicLoginMenuLink.addEventListener('click', (event) => {
+    event.preventDefault(); // Prevent default anchor link behavior
+    teacherLoginBtn.click(); // Simulate a click on the existing teacher login button
 });
 
 startAttendanceForSelectedCourseBtn.addEventListener('click', startAttendanceFlow);
